@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessible Focus Example</title>
+    <style>
+        /* Basic styles for the navigation */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            background-color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+            position: relative;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            display: block;
+        }
+
+        nav a:hover, nav a:focus {
+            background-color: #555;
+        }
+
+        /* Focus styles: dashed outline with a high contrast color */
+        nav a:focus {
+            outline: 3px dashed #FFD700; /* Goldgelb für starken Kontrast */
+            outline-offset: 6px; /* Abstand der Umrandung vom Text */
+        }
+
+        /* Styles for the dropdown menu */
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #444;
+            border: 1px solid #ccc;
+            z-index: 1;
+        }
+
+        .submenu li {
+            padding: 0;
+        }
+
+        .submenu a {
+            padding: 10px 15px;
+            background-color: #444;
+            color: white;
+        }
+
+        .submenu a:hover, .submenu a:focus {
+            background-color: #666;
+        }
+
+        /* Show the submenu on hover or focus */
+        li:hover .submenu, li:focus-within .submenu {
+            display: block;
+        }
+
+        /* Underline accesskey characters */
+        .underline-accesskey {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h2>Die Schwierigkeit, eine barrierefreie Navigation mit Untermenü zu erstellen</h2>
+    <h4>Schulhof-Programmierung.de - Übung und Testsituation</h4>
+
+    
+    <nav>
+        <ul>
+            <li>
+                <a href="index.html" accesskey="h">
+                    <span class="underline-accesskey">H</span>ome
+                </a>
+            </li>
+            <li>
+                <a href="briefmarke.html" id="briefmarkeLink" accesskey="b" aria-expanded="false">
+                    <span class="underline-accesskey">B</span>riefmarke
+                </a>
+                <ul class="submenu" aria-hidden="true" id="submenu">
+                    <li>
+                        <a href="frankreich.html" accesskey="k">
+                            <span class="no-underline">Fran</span><span class="underline-accesskey">k</span>reich
+                        </a>
+                    </li>
+                    <li>
+                        <a href="spanien.html" accesskey="p">
+                            S<span class="underline-accesskey">p</span>anien
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        const briefmarkeLink = document.getElementById('briefmarkeLink');
+        const submenu = document.getElementById('submenu');
+
+        // Function to show submenu
+        function showSubmenu() {
+            briefmarkeLink.setAttribute('aria-expanded', 'true');
+            submenu.setAttribute('aria-hidden', 'false');
+        }
+
+        // Function to hide submenu
+        function hideSubmenu() {
+            briefmarkeLink.setAttribute('aria-expanded', 'false');
+            submenu.setAttribute('aria-hidden', 'true');
+        }
+
+        // Handle focus events for accessibility
+        briefmarkeLink.addEventListener('focus', showSubmenu);
+        submenu.addEventListener('focusin', showSubmenu);
+
+        briefmarkeLink.addEventListener('blur', function() {
+            setTimeout(function() {
+                if (!submenu.contains(document.activeElement)) {
+                    hideSubmenu();
+                }
+            }, 100);
+        });
+
+        submenu.addEventListener('focusout', function() {
+            setTimeout(function() {
+                if (!submenu.contains(document.activeElement) && !briefmarkeLink.contains(document.activeElement)) {
+                    hideSubmenu();
+                }
+            }, 100);
+        });
+    </script>
+
+</body>
+</html>
+
